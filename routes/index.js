@@ -136,6 +136,40 @@ router.post('/edit/:id', function (req, res, next) {
     });
 });
 
+router.post('/toggle-complete', function (req, res, next) {
+  const isAuth = req.isAuthenticated();
+  if (!isAuth) {
+    return res.redirect('/signin');
+  }
+
+  const taskId = req.body.id;
+  const userId = req.user.id;
+
+  // まず現在の状態を取得する
+  knex("tasks")
+    .where({ id: taskId, user_id: userId })
+    .first()
+    .then(function (todo) {
+      if (!todo) {
+        return res.redirect('/');
+      }
+
+      // 現在の状態を反転させる (0なら1、1なら0)
+      const newStatus = todo.is_completed ? 0 : 1;
+
+      return knex("tasks")
+        .where({ id: taskId, user_id: userId })
+        .update({ is_completed: newStatus });
+    })
+    .then(function () {
+      res.redirect('/');
+    })
+    .catch(function (err) {
+      console.error(err);
+      res.redirect('/');
+    });
+});
+
 router.use('/signup', require('./signup'));
 router.use('/signin', require('./signin'));
 router.use('/logout', require('./logout'));
