@@ -19,9 +19,37 @@
       </form>
     </div>
     <div class="col-md-6">
-      <ul>
+ <ul class="list-unstyled">
         <% for(let todo of todos){ %>
-          <li><span><%= todo.content %></span></li>
+          <li class="d-flex align-items-center justify-content-between border-bottom py-2">
+            
+            <!-- 左側：チェックボックス ＋ タスク名 -->
+            <div class="d-flex align-items-center">
+              <form action="/toggle-complete" method="post" class="mr-2 mb-0">
+                <input type="hidden" name="id" value="<%= todo.id %>"/>
+                <input type="checkbox" name="is_completed" onchange="this.form.submit()" <%= todo.is_completed ? 'checked' : '' %> />
+              </form>
+
+              <span>
+                <% if (todo.is_completed) { %>
+                  <s><%= todo.content %></s>
+                <% } else { %>
+                  <%= todo.content %>
+                <% } %>
+              </span>
+            </div>
+
+            <!-- 右側：編集・削除ボタン -->
+            <div class="d-flex align-items-center">
+              <a href="/edit/<%= todo.id %>" class="btn btn-outline-primary btn-sm mr-2">編集</a>
+
+              <form action="/delete" method="post" class="mb-0" onsubmit="return confirm('本当に削除しますか？');">
+                <input type="hidden" name="id" value="<%= todo.id %>"/>
+                <button type="submit" class="btn btn-outline-danger btn-sm">削除</button>
+              </form>
+            </div>
+
+          </li>
         <% } %>
       </ul>
     </div>

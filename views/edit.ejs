@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+</head>
+<body>
+<%- include('./header'); %>
+<%- include('./error_messages'); %>
+
+<div class="container mt-4">
+  <h2>タスクの編集</h2>
+  
+  <form action="/edit/<%= todo.id %>" method="post">
+    <div class="form-group">
+      <label for="content">タスク内容</label>
+      <input required type="text" class="form-control" name="content" id="content" value="<%= todo.content %>"/>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">更新</button>
+    <a href="/" class="btn btn-secondary">キャンセル</a>
+  </form>
+</div>
+
+</body>
+</html>
