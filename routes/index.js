@@ -78,6 +78,64 @@ router.post('/delete', function (req, res, next) {
     });
 });
 
+// 1. 編集画面の表示処理
+router.get('/edit/:id', function (req, res, next) {
+  const isAuth = req.isAuthenticated();
+  if (!isAuth) {
+    return res.redirect('/signin');
+  }
+
+  const taskId = req.params.id; // URLパラメータ (:id) から取得
+  const userId = req.user.id;
+
+  knex("tasks")
+    .where({ id: taskId, user_id: userId })
+    .first() // 1件だけ取得
+    .then(function (todo) {
+      if (!todo) {
+        // 対象のタスクが見つからない場合
+        return res.redirect('/');
+      }
+      res.render('edit', {
+        title: 'タスクの編集',
+        todo: todo,
+        isAuth: isAuth,
+      });
+    })
+    .catch(function (err) {
+      console.error(err);
+      res.redirect('/');
+    });
+});
+
+// 2. タスクの更新処理
+router.post('/edit/:id', function (req, res, next) {
+  const isAuth = req.isAuthenticated();
+  if (!isAuth) {
+    return res.redirect('/signin');
+  }
+
+  const taskId = req.params.id;
+  const userId = req.user.id;
+  const updatedContent = req.body.content;
+
+  knex("tasks")
+    .where({ id: taskId, user_id: userId })
+    .update({ content: updatedContent }) // DBのcontentカラムを更新
+    .then(function () {
+      res.redirect('/');
+    })
+    .catch(function (err) {
+      console.error(err);
+      res.render('edit', {
+        title: 'タスクの編集',
+        todo: { id: taskId, content: updatedContent },
+        isAuth: isAuth,
+        errorMessage: [err.sqlMessage],
+      });
+    });
+});
+
 router.use('/signup', require('./signup'));
 router.use('/signin', require('./signin'));
 router.use('/logout', require('./logout'));

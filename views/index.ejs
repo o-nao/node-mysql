@@ -24,6 +24,9 @@
           <li class="mb-2">
             <span><%= todo.content %></span>
 
+            <!-- 編集ボタン（ここを追加） -->
+            <a href="/edit/<%= todo.id %>" class="btn btn-primary btn-sm ml-2">編集</a>
+            
             <!-- 削除ボタン（ここを追加） -->
             <form action="/delete" method="post" style="display: inline;" onsubmit="return confirm('本当に削除しますか？');">
               <input type="hidden" name="id" value="<%= todo.id %>"/>
