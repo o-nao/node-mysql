@@ -51,6 +51,33 @@ router.post('/', function (req, res, next) {
     });
 });
 
+router.post('/delete', function (req, res, next) {
+  const isAuth = req.isAuthenticated();
+  
+  // ログインしていない場合は処理しない（ログインページなどへ飛ばす）
+  if (!isAuth) {
+    return res.redirect('/signin');
+  }
+
+  const taskId = req.body.id;
+  const userId = req.user.id;
+
+  knex("tasks")
+    .where({ id: taskId, user_id: userId }) // 自分のタスクかつ指定されたIDのもの
+    .del() // 削除実行
+    .then(function () {
+      res.redirect('/');
+    })
+    .catch(function (err) {
+      console.error(err);
+      res.render('index', {
+        title: 'ToDo App',
+        isAuth: isAuth,
+        errorMessage: [err.sqlMessage],
+      });
+    });
+});
+
 router.use('/signup', require('./signup'));
 router.use('/signin', require('./signin'));
 router.use('/logout', require('./logout'));
